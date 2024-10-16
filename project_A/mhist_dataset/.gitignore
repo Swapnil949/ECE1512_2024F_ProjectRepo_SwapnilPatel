@@ -2,3 +2,5 @@ images.zip
 annotations.csv
 images/
 images-split/
+test_annotations.csv
+train_annotations.csv
