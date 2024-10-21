@@ -339,10 +339,10 @@ def get_loops(ipc):
 
 
 
-def epoch(mode, dataloader, net, optimizer, criterion, device):
+def epoch(mode, dataloader, net, optimizer, criterion, args, aug):
     loss_avg, acc_avg, num_exp = 0, 0, 0
-    net = net.to(device)
-    criterion = criterion.to(device)
+    net = net.to(args.device)
+    criterion = criterion.to(args.device)
 
     if mode == 'train':
         net.train()
@@ -350,8 +350,14 @@ def epoch(mode, dataloader, net, optimizer, criterion, device):
         net.eval()
 
     for i_batch, datum in enumerate(dataloader):
-        img = datum[0].float().to(device)
-        lab = datum[1].long().to(device)
+        img = datum[0].float().to(args.device)
+        if aug:
+            if args.dsa:
+                img = DiffAugment(img, args.dsa_strategy, param=args.dsa_param)
+            else:
+                pass
+                #img = augment(img, args.dc_aug_param, device=args.device)
+        lab = datum[1].long().to(args.device)
         n_b = lab.shape[0]
 
         output = net(img)
