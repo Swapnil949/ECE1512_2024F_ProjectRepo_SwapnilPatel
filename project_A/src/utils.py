@@ -8,7 +8,7 @@ from torch.utils.data import Dataset
 from torchvision import datasets, transforms
 from scipy.ndimage import rotate as scipyrotate
 from networks import MLP, ConvNet, LeNet, AlexNet, AlexNetBN, VGG11, VGG11BN, ResNet18, ResNet18BN_AP, ResNet18BN
-
+import MHISTDataset
 
 """
 Attention module is taken from the following repository:
@@ -136,6 +136,44 @@ def get_dataset(dataset, data_path):
 
         dst_test = TensorDataset(images_val, labels_val)  # no augmentation
 
+    elif dataset == 'MHIST':
+        channel = 3
+        im_size = (224, 224)
+        num_classes = 2
+        class_names = ['HP', 'SSA']
+        data_path = '../mhist_dataset/images-split'  
+        to_tensor = transforms.ToTensor()
+        
+        train = MHISTDataset.MHISTDataset(data_path, train=True, transform=to_tensor)
+        test = MHISTDataset.MHISTDataset(data_path, train=False, transform=to_tensor)
+        """
+        images_train = []
+        labels_train = []
+        for i in range(len(train)):
+            img, label, name, img_path = train[i]
+            img = to_tensor(img)
+            label = torch.tensor(label)
+            images_train.append(img)
+            labels_train.append(label)
+            
+        images_test = []
+        labels_test = []
+        for i in range(len(test)):
+            img, label, name, img_path = test[i]
+            img = to_tensor(img)
+            label = torch.tensor(label)
+            images_test.append(img)
+            labels_test.append(label)
+            
+        dst_train = TensorDataset(images_train, labels_train)
+        dst_test = TensorDataset(images_test, labels_test)
+        """
+        dst_train = train
+        dst_test = test
+        # calculate mean and std
+        mean = [0.0, 0.0, 0.0]
+        std = [0.0, 0.0, 0.0]
+        
     else:
         exit('unknown dataset: %s'%dataset)
 

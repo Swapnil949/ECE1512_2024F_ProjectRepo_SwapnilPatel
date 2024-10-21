@@ -1,7 +1,9 @@
 """
 https://github.com/DataDistillation/DataDAM/
 
-A. Sajedi, S. Khaki, E. Amjadian, L. Z. Liu, Y. A. Lawryshyn, and K. N. Plataniotis, DataDAM: Efficient Dataset Distillation with Attention Matching. 2023. [Online]. Available: https://arxiv.org/abs/2310.00093 
+A. Sajedi, S. Khaki, E. Amjadian, L. Z. Liu, Y. A. Lawryshyn, and K. N. Plataniotis,
+DataDAM: Efficient Dataset Distillation with Attention Matching. 2023. [Online].
+Available: https://arxiv.org/abs/2310.00093 
 """
 
 import os
@@ -12,13 +14,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from utils import get_loops, get_dataset, get_network, get_eval_pool, evaluate_synset, get_daparam, get_time, TensorDataset, epoch, DiffAugment, ParamDiffAug, get_attention
-import matplotlib.pyplot as plt
-from torchvision import transforms
-from torch.utils.data.distributed import DistributedSampler
-import kornia as K
-import torch.distributed as dist
-import torch.cuda.comm
+from utils import get_dataset, get_network, get_eval_pool, evaluate_synset, get_time, DiffAugment, ParamDiffAug, get_attention
 
 def main():
 
@@ -36,28 +32,25 @@ def main():
     parser.add_argument('--batch_real', type=int, default=256, help='batch size for real data')
     parser.add_argument('--batch_train', type=int, default=256, help='batch size for training networks')
     parser.add_argument('--init', type=str, default='real', help='noise/real/smart: initialize synthetic images from random noise or randomly sampled real images.')
-    parser.add_argument('--dsa_strategy', type=str, default='none', help='differentiable Siamese augmentation strategy')
-    parser.add_argument('--data_path', type=str, default='', help='dataset path')
-    parser.add_argument('--zca', type=bool, default=False, help='Zca Whitening')
-    parser.add_argument('--save_path', type=str, default='', help='path to save results')
+    #parser.add_argument('--dsa_strategy', type=str, default='none', help='differentiable Siamese augmentation strategy')
+    parser.add_argument('--data_path', type=str, default='../datasets', help='dataset path')
+    parser.add_argument('--save_path', type=str, default='../output/', help='path to save results')
     parser.add_argument('--task_balance', type=float, default=0.01, help='balance attention with output')
     
     args = parser.parse_args()
-    args.method = 'DataDAM'
+    args.method = 'attention_matching'
     args.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    args.dsa_param = ParamDiffAug()
-    args.dsa = False if args.dsa_strategy in ['none', 'None'] else True
-
+    args.dsa = False
     if not os.path.exists(args.data_path):
         os.mkdir(args.data_path)
 
     if not os.path.exists(args.save_path):
         os.mkdir(args.save_path)
 
-    eval_it_pool = np.arange(0, args.Iteration+1, 2000).tolist()[:] if args.eval_mode == 'S' or args.eval_mode == 'SS' else [args.Iteration] # The list of iterations when we evaluate models and record results.
+    eval_it_pool = np.arange(0, args.Iteration+1, 10).tolist()[:]
     print('eval_it_pool: ', eval_it_pool)
     
-    channel, im_size, num_classes, class_names, mean, std, dst_train, dst_test, testloader, zca = get_dataset(args.dataset, args.data_path)
+    channel, im_size, num_classes, class_names, mean, std, dst_train, dst_test, testloader, trainloader = get_dataset(args.dataset, args.data_path)
     model_eval_pool = get_eval_pool(args.eval_mode, args.model, args.model)
 
 
@@ -104,49 +97,14 @@ def main():
 
         ''' initialize the synthetic data '''
         image_syn = torch.randn(size=(num_classes*args.ipc, channel, im_size[0], im_size[1]), dtype=torch.float, requires_grad=True, device=args.device)
-        label_syn = torch.tensor([np.ones(args.ipc)*i for i in range(num_classes)], dtype=torch.long, requires_grad=False, device=args.device).view(-1) # [0,0,0, 1,1,1, ..., 9,9,9]
+        label_syn = torch.tensor(np.array([np.ones(args.ipc)*i for i in range(num_classes)]), dtype=torch.long, device=args.device).view(-1)
         if args.init == 'real':
             print('initialize synthetic data from random real images')
             for c in range(num_classes):
                 image_syn.data[c*args.ipc:(c+1)*args.ipc] = get_images(c, args.ipc).detach().data
         elif args.init =='noise' :
             print('initialize synthetic data from random noise')
-            
-        elif args.init =='smart' :
-            print('initialize synthetic data from SMART selection')
-            Path = './'
-            if args.dataset == "CIFAR10":
-                Path+='CIFAR10_'
-            
-            elif args.dataset == "CIFAR100":
-                Path+='CIFAR100_'
-                
-            if args.ipc == 1:
-                Path += 'IPC1_'
-                
-            elif args.ipc == 10:
-                Path += 'IPC10_'
-                
-            elif args.ipc == 50:
-                Path += 'IPC50_'
-                
-            elif args.ipc == 100:
-                Path += 'IPC100_'
-            
-            elif args.ipc == 200:
-                Path += 'IPC200_'
-            image_syn.data[:][:][:][:] = torch.load(Path+'images.pt')
-            label_syn.data[:] = torch.load(Path+'labels.pt')
-            
-        if(args.zca):
-            print("ZCA Whitened Complete")
-            image_syn.data[:][:][:][:] = zca(image_syn.data[:][:][:][:], include_fit=True)
-        else:
-            print("No ZCA Whiteinign")
-                
-            
-            
-            
+                        
         
         ''' training '''
         optimizer_img = torch.optim.SGD([image_syn, ], lr=args.lr_img, momentum=0.5) # optimizer_img for synthetic data
@@ -190,8 +148,8 @@ def main():
                 for model_eval in model_eval_pool:
                     print('-------------------------\nEvaluation\nmodel_train = %s, model_eval = %s, iteration = %d'%(args.model, model_eval, it))
 
-                    print('DSA augmentation strategy: \n', args.dsa_strategy)
-                    print('DSA augmentation parameters: \n', args.dsa_param.__dict__)
+                    #print('DSA augmentation strategy: \n', args.dsa_strategy)
+                    #print('DSA augmentation parameters: \n', args.dsa_param.__dict__)
 
                     accs = []
                     Start = time.time()
@@ -212,7 +170,8 @@ def main():
                     if np.mean(accs) > max_mean:
                         data=[]
                         data_save.append([copy.deepcopy(image_syn.detach().cpu()), copy.deepcopy(label_syn.detach().cpu())])
-                        torch.save({'data': data_save, 'accs_all_exps': accs_all_exps, }, os.path.join(args.save_path, 'res_%s_%s_%s_%dipc_.pt'%(args.method, args.dataset, args.model, args.ipc)))
+                        save_file_path = os.path.join(args.save_path, 'res_%s_%s_%s_%dipc_.pt'%(args.method, args.dataset, args.model, args.ipc))
+                        torch.save({'data': data_save, 'accs_all_exps': accs_all_exps, }, save_file_path)
                     # Track All of them!
                     total_mean[exp]['mean'].append(np.mean(accs))
                     total_mean[exp]['std'].append(np.std(accs))
@@ -244,29 +203,9 @@ def main():
             def error(real, syn, err_type="MSE"):
                         
                 if(err_type == "MSE"):
-                    err = torch.sum((torch.mean(real, dim=0) - torch.mean(syn, dim=0))**2)
-                
-                elif (err_type == "MAE"):
-                    err = torch.sum(torch.abs(torch.mean(real, dim=0) - torch.mean(syn, dim=0)))
-                    
-                elif (err_type == "ANG"):
-                    rl = torch.mean(real, dim=0) 
-                    sy = torch.mean(syn, dim=0)
-                    num = torch.matmul(rl, sy)
-                    denom = (torch.sum(rl**2)**0.5) * (torch.sum(sy**2)**0.5)
-                    err = torch.acos(num/denom)
-                    
+                    err = torch.sum((torch.mean(real, dim=0) - torch.mean(syn, dim=0))**2)                
                 elif(err_type == "MSE_B"):
                     err = torch.sum((torch.mean(real.reshape(num_classes, args.batch_real, -1), dim=1).cpu() - torch.mean(syn.cpu().reshape(num_classes, args.ipc, -1), dim=1))**2)
-                elif(err_type == "MAE_B"):
-                    err = torch.sum(torch.abs(torch.mean(real.reshape(num_classes, args.batch_real, -1), dim=1).cpu() - torch.mean(syn.reshape(num_classes, args.ipc, -1).cpu(), dim=1)))
-                elif (err_type == "ANG_B"):
-                    rl = torch.mean(real.reshape(num_classes, args.batch_real, -1), dim=1).cpu()
-                    sy = torch.mean(syn.reshape(num_classes, args.ipc, -1), dim=1)
-                    
-                    denom = (torch.sum(rl**2)**0.5).cpu() * (torch.sum(sy**2)**0.5).cpu()
-                    num = rl.cpu() * sy.cpu()
-                    err = torch.sum(torch.acos(num/denom))
                 return err
             
             ''' update synthetic data '''
@@ -279,12 +218,12 @@ def main():
             for c in range(num_classes):
                 img_real = get_images(c, args.batch_real)
                 img_syn = image_syn[c*args.ipc:(c+1)*args.ipc].reshape((args.ipc, channel, im_size[0], im_size[1]))
-
+                """""
                 if args.dsa:
                     seed = int(time.time() * 1000) % 100000
                     img_real = DiffAugment(img_real, args.dsa_strategy, seed=seed, param=args.dsa_param)
                     img_syn = DiffAugment(img_syn, args.dsa_strategy, seed=seed, param=args.dsa_param)
-
+                """
                 images_real_all.append(img_real)
                 images_syn_all.append(img_syn)
 
@@ -359,7 +298,7 @@ def main():
     num_eval = args.num_exp*args.num_eval
     print('Run %d experiments, train on %s, evaluate %d random %s, mean  = %.2f%%  std = %.2f%%'%(args.num_exp, args.model,num_eval, key, mean*100, std*100))
 
-
+    return save_file_path
 if __name__ == '__main__':
     main()
 

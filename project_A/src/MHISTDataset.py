@@ -5,13 +5,18 @@ from torch.utils.data import Dataset
 
 
 class MHISTDataset(Dataset):
-    def __init__(self, split_dir, transform=None):
+    def __init__(self, split_dir, train=True, transform=None):
         """
         Args:
             split_dir (str): Directory containing the split images (e.g., 'images-split/train' or 'images-split/test').
             transform (callable, optional): Optional transform to be applied on a sample.
         """
         self.split_dir = Path(split_dir)
+        if train:
+            self.split_dir = self.split_dir / 'train'
+        else:
+            self.split_dir = self.split_dir / 'test'
+    
         self.transform = transform
 
         # Map folder names to class labels
@@ -44,4 +49,4 @@ class MHISTDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
-        return image, label, name, img_path
+        return image, label
