@@ -198,7 +198,8 @@ def get_network(model, channel, num_classes, im_size=(32, 32)):
         net = ConvNet(channel=channel, num_classes=num_classes, net_width=net_width, net_depth=3, net_act=net_act, net_norm=net_norm, net_pooling=net_pooling, im_size=im_size)
     elif model == 'ConvNetD4':
         net = ConvNet(channel=channel, num_classes=num_classes, net_width=net_width, net_depth=4, net_act=net_act, net_norm=net_norm, net_pooling=net_pooling, im_size=im_size)
-
+    elif model == 'ConvNetD7':
+        net = ConvNet(channel=channel, num_classes=num_classes, net_width=net_width, net_depth=7, net_act=net_act, net_norm=net_norm, net_pooling=net_pooling, im_size=im_size)
     elif model == 'ConvNetW32':
         net = ConvNet(channel=channel, num_classes=num_classes, net_width=32, net_depth=net_depth, net_act=net_act, net_norm=net_norm, net_pooling=net_pooling, im_size=im_size)
     elif model == 'ConvNetW64':
@@ -338,10 +339,10 @@ def get_loops(ipc):
 
 
 
-def epoch(mode, dataloader, net, optimizer, criterion, args, aug):
+def epoch(mode, dataloader, net, optimizer, criterion, device):
     loss_avg, acc_avg, num_exp = 0, 0, 0
-    net = net.to(args.device)
-    criterion = criterion.to(args.device)
+    net = net.to(device)
+    criterion = criterion.to(device)
 
     if mode == 'train':
         net.train()
@@ -349,13 +350,8 @@ def epoch(mode, dataloader, net, optimizer, criterion, args, aug):
         net.eval()
 
     for i_batch, datum in enumerate(dataloader):
-        img = datum[0].float().to(args.device)
-        if aug:
-            if args.dsa:
-                img = DiffAugment(img, args.dsa_strategy, param=args.dsa_param)
-            else:
-                img = augment(img, args.dc_aug_param, device=args.device)
-        lab = datum[1].long().to(args.device)
+        img = datum[0].float().to(device)
+        lab = datum[1].long().to(device)
         n_b = lab.shape[0]
 
         output = net(img)
