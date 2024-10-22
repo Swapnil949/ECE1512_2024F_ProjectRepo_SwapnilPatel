@@ -27,15 +27,17 @@ def main():
     parser.add_argument('--num_eval', type=int, default=50, help='the number of evaluating randomly initialized models')
     parser.add_argument('--epoch_eval_train', type=int, default=1, help='epochs to train a model with synthetic data')
     parser.add_argument('--Iteration', type=int, default=10, help='training iterations')
-    parser.add_argument('--lr_img', type=float, default=1, help='learning rate for updating synthetic images, 1 for low IPCs 10 for >= 100')
+    parser.add_argument('--lr_img', type=float, default=0.1, help='learning rate for updating synthetic images, 1 for low IPCs 10 for >= 100') 
     parser.add_argument('--lr_net', type=float, default=0.01, help='learning rate for updating network parameters')
-    parser.add_argument('--batch_real', type=int, default=256, help='batch size for real data')
-    parser.add_argument('--batch_train', type=int, default=256, help='batch size for training networks')
+    parser.add_argument('--batch_real', type=int, default=64, help='batch size for real data')
+    parser.add_argument('--batch_train', type=int, default=64, help='batch size for training networks')
     parser.add_argument('--init', type=str, default='real', help='noise/real/smart: initialize synthetic images from random noise or randomly sampled real images.')
-    #parser.add_argument('--dsa_strategy', type=str, default='none', help='differentiable Siamese augmentation strategy')
+
     parser.add_argument('--data_path', type=str, default='../datasets', help='dataset path')
     parser.add_argument('--save_path', type=str, default='../output/', help='path to save results')
     parser.add_argument('--task_balance', type=float, default=0.01, help='balance attention with output')
+    parser.add_argument('--output_file', type=str, default='none', help='output file name')
+
     
     args = parser.parse_args()
     args.method = 'attention_matching'
@@ -170,7 +172,10 @@ def main():
                     if np.mean(accs) > max_mean:
                         data=[]
                         data_save.append([copy.deepcopy(image_syn.detach().cpu()), copy.deepcopy(label_syn.detach().cpu())])
-                        save_file_path = os.path.join(args.save_path, 'res_%s_%s_%s_%dipc_.pt'%(args.method, args.dataset, args.model, args.ipc))
+                        if args.output_file == 'none':
+                            save_file_path = os.path.join(args.save_path, 'res_%s_%s_%s_%dipc_.pt'%(args.method, args.dataset, args.model, args.ipc))
+                        else :
+                            save_file_path = os.path.join(args.save_path, args.output_file)
                         torch.save({'data': data_save, 'accs_all_exps': accs_all_exps, }, save_file_path)
                     # Track All of them!
                     total_mean[exp]['mean'].append(np.mean(accs))

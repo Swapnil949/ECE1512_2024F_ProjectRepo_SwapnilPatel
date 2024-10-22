@@ -135,7 +135,7 @@ def get_dataset(dataset, data_path):
             images_val[:, c] = (images_val[:, c] - mean[c]) / std[c]
 
         dst_test = TensorDataset(images_val, labels_val)  # no augmentation
-
+    
     elif dataset == 'MHIST':
         channel = 3
         im_size = (224, 224)
@@ -144,42 +144,19 @@ def get_dataset(dataset, data_path):
         data_path = '../mhist_dataset/images-split'  
         to_tensor = transforms.ToTensor()
         
-        train = MHISTDataset.MHISTDataset(data_path, train=True, transform=to_tensor)
-        test = MHISTDataset.MHISTDataset(data_path, train=False, transform=to_tensor)
-        """
-        images_train = []
-        labels_train = []
-        for i in range(len(train)):
-            img, label, name, img_path = train[i]
-            img = to_tensor(img)
-            label = torch.tensor(label)
-            images_train.append(img)
-            labels_train.append(label)
-            
-        images_test = []
-        labels_test = []
-        for i in range(len(test)):
-            img, label, name, img_path = test[i]
-            img = to_tensor(img)
-            label = torch.tensor(label)
-            images_test.append(img)
-            labels_test.append(label)
-            
-        dst_train = TensorDataset(images_train, labels_train)
-        dst_test = TensorDataset(images_test, labels_test)
-        """
-        dst_train = train
-        dst_test = test
+        dst_train = MHISTDataset.MHISTDataset(data_path, train=True, transform=to_tensor)
+        dst_test = MHISTDataset.MHISTDataset(data_path, train=False, transform=to_tensor)
+        
         # calculate mean and std
-        mean = [0.0, 0.0, 0.0]
-        std = [0.0, 0.0, 0.0]
+        mean = [0.5, 0.5, 0.5]  # Adjust these values based on dataset statistics
+        std = [0.1, 0.1, 0.1]  # Adjust these values based on dataset statistics
         
     else:
         exit('unknown dataset: %s'%dataset)
 
 
-    testloader = torch.utils.data.DataLoader(dst_test, batch_size=256, shuffle=False, num_workers=0)
-    trainloader = torch.utils.data.DataLoader(dst_train, batch_size=256, shuffle=True, num_workers=0)
+    testloader = torch.utils.data.DataLoader(dst_test, batch_size=64, shuffle=False, num_workers=0)
+    trainloader = torch.utils.data.DataLoader(dst_train, batch_size=64, shuffle=True, num_workers=0)
     return channel, im_size, num_classes, class_names, mean, std, dst_train, dst_test, testloader, trainloader
 
 
