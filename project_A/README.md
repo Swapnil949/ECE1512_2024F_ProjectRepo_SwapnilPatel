@@ -9,3 +9,13 @@ This repository contains the following files and directories:
 3. **utils.ipynb**: This is a Python notebook that provides utilities such as access to datasets, preprocessing, and data augmentation. This file is used for learning synthetic dates on the MNIST and CIFAR10 datasets.
 
 4. **Project_B_FAQs.pdf**: This is a list of frequently asked questions that aim to answer (almost) all of your questions and concerns that you may have during Project A.
+
+### Hardware Information
+
+```
+CPU : AMD EPYC 7B13
+PyTorch Version: 2.2.1
+CUDA Device: NVIDIA GeForce RTX 4090
+CUDA Compute Capability: 8.9
+Total Memory: 23.65 GB
+```
