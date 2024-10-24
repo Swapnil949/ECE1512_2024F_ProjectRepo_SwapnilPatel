@@ -1,4 +1,4 @@
-MHIST_real_res.pt filter=lfs diff=lfs merge=lfs -text
-NMIST_noise_res.pt filter=lfs diff=lfs merge=lfs -text
-NMIST_real_res.pt filter=lfs diff=lfs merge=lfs -text
 MHIST_noise_res.pt filter=lfs diff=lfs merge=lfs -text
+MHIST_real_res.pt filter=lfs diff=lfs merge=lfs -text
+MNIST_noise_res.pt filter=lfs diff=lfs merge=lfs -text
+MNIST_real_res.pt filter=lfs diff=lfs merge=lfs -text
