@@ -1,3 +1,6 @@
+# NOTE 
+This repository has been cloned from [https://github.com/NUS-HPC-AI-Lab/PAD](https://github.com/NUS-HPC-AI-Lab/PAD) and modified for support for MNIST dataset.
+
 # Prioritize Alignment in Dataset Distillation
 
 ![image-20240529113048331](README.assets/5.png)
