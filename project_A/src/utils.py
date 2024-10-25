@@ -7,6 +7,8 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 from torchvision import datasets, transforms
 from scipy.ndimage import rotate as scipyrotate
+from network import ConvNet
+from thop import profile
 import sys
 #from networks import MLP, ConvNet, LeNet, AlexNet, AlexNetBN, VGG11, VGG11BN, ResNet18, ResNet18BN_AP, ResNet18BN
 #import MHISTDataset
@@ -777,3 +779,4 @@ def get_syn_dataset (sym_name):
 
     dataloader = torch.utils.data.DataLoader(syn_dataset, batch_size=32, shuffle=True)
     return syn_dataset, channel, num_classes, im_size, dataloader
+
