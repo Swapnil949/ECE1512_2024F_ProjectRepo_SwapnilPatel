@@ -93,7 +93,18 @@ def get_dataset(dataset, data_path, batch_size=1, subset="imagenette", args=None
         dst_test = datasets.CIFAR10(data_path, train=False, download=True, transform=transform)
         class_names = dst_train.classes
         class_map = {x:x for x in range(num_classes)}
-
+        
+    elif dataset == 'MNIST':
+        channel = 1
+        im_size = (28, 28)
+        num_classes = 10
+        mean = [0.1307]
+        std = [0.3081]
+        transform = transforms.Compose([transforms.ToTensor()])
+        dst_train = datasets.MNIST(data_path, train=True, download=True, transform=transform)
+        dst_test = datasets.MNIST(data_path, train=False, download=True, transform=transform)
+        class_names = dst_train.classes
+        class_map = {x: x for x in range(num_classes)}
 
     elif dataset == 'Tiny':
         channel = 3

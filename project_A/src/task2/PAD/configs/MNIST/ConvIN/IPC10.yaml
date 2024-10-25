@@ -1,4 +1,4 @@
-dataset: CIFAR10
+dataset: MNIST
 device: [3]
 
 ipc: 10
@@ -14,12 +14,12 @@ Iteration: 100
 batch_syn: 500
 
 # wandb
-project: CIFAR10_ipc10
+project: mnist_ipc10
 
 num_eval: 1
 eval_it: 95
 skip_first_eva: True
-
+vscode-remote://ssh-remote%2Bvast_ai5/root/DeepCore/output/mnist.pt
 lr_y: 2.0
 Momentum_y: 0.9
 threshold: 1.

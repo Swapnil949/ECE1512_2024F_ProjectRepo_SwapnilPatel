@@ -1,1 +1,3 @@
 /.venv/
+project_A/src/task2/PAD/dataset/
+project_A/src/task2/PAD/distill/wandb/
