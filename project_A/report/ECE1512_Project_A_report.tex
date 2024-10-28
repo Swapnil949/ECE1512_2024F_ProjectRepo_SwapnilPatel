@@ -128,10 +128,18 @@ The MNIST dataset contains 28x28-pixel grayscale images of handwritten digits (0
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.48\textwidth]{mhist_real_syn_all.png}
-	\caption{Synthetic MHIST Dataset created from real images}
-	\label{fig:mhist_real_syn_all}
+	\includegraphics[width=0.48\textwidth]{mhist_real_syn_hp.png}
+	\caption{Synthetic MHIST Dataset created from real images [HP]}
+	\label{fig:mhist_real_syn_hp}
 \end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.48\textwidth]{mhist_real_syn_ssa.png}
+	\caption{Synthetic MHIST Dataset created from real images [SSA]}
+	\label{fig:mhist_real_syn_ssa}
+\end{figure}
+
 \subsubsection{Synthetic Dataset using Gaussian noise}
 \begin{figure}[H]
 	\centering
@@ -161,12 +169,12 @@ The MNIST dataset contains 28x28-pixel grayscale images of handwritten digits (0
 	\caption{ConvNet-7 Model Trained using Original and Synthetic dataset}
 	\label{fig:mhist_syn_acc}
 \end{figure}
-\subsubsection{Cross-architecture Generalization - AlexNet}
+\subsubsection{Cross-architecture Generalization - ResNet-18}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.48\textwidth]{mhist_alex_acc.png}
-	\caption{AlexNet Model Trained using Synthetic dataset}
-	\label{fig:mhist_alex_acc}
+	\includegraphics[width=0.48\textwidth]{mhist_resnet_acc.png}
+	\caption{ResNet-18 Model Trained using Synthetic dataset}
+	\label{fig:mhist_resnet_acc}
 \end{figure}
 
 \subsection{Data Distillation Application}
