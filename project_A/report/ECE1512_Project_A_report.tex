@@ -29,13 +29,36 @@ The entire project source can be found at: \href{https://github.com/Swapnil949/E
 \section{Introduction}
 \label{sec:intro}
 
+Dataset Distillation is an emerging technique in machine learning designed to compress large datasets into smaller, synthetic datasets that retain the critical information needed to train neural networks effectively. This approach addresses the growing demand for computational efficiency by significantly reducing memory requirements and training times without compromising model performance. By distilling the essential features of a vast dataset, researchers can train models on a compact, representative subset, thus enabling rapid prototyping and exploration of deep learning architectures. As dataset sizes continue to expand, methods such as dataset distillation offer promising pathways for scalable and resource-efficient machine learning. \\
 
+Dataset distillation has several applications such as \textit{Neural Architecture Search (NAS)}, \textit{Privacy Preservation}, \textit{Federated Learning}, \textit{Memory-efficient Continual Learning}, and \textit{Data sharing}.
 
-\section{Related Work}
-\label{sec:related}
+\subsubsection*{Neural Architecture Search (NAS)}
+In NAS, dataset distillation provides a compact proxy dataset that approximates the performance of training on a full-scale dataset \cite{white2023neuralarchitecturesearchinsights}. This enables faster and more resource-efficient model evaluation across architectures, allowing for rapid exploration and selection of optimal models without the computational expense of using the full dataset.
+
+\subsubsection*{Privacy Preservation}
+For privacy preservation, distilled datasets reduce exposure to sensitive information by retaining only essential features rather than raw, identifiable data \cite{dong2022privacyfreedoesdataset}. This allows machine learning models to be trained securely in privacy-sensitive domains (e.g., healthcare and finance) and enhances data sharing compliance in settings like federated learning.
 
 \section{Dataset Distillation with Attention Matching}
+The paper "DataDAM: Efficient Dataset Distillation with Attention Matching" \cite{sajedi2023datadamefficientdatasetdistillation} presents a novel dataset distillation approach aimed at reducing training dataset sizes while retaining essential information. The primary challenge addressed by the authors is the high computational cost associated with deep learning models when using full-sized datasets.
 
+In this work, the authors generate a synthetic dataset by employing \texttt{Spatial Attention Mapping (SAM)} to capture attention maps from real and synthetic data across various layers within a family of randomly initialized neural networks. This approach alleviates the substantial memory demands typically encountered in state-of-the-art methods. The use of randomly initialized neural network instead of Pre-trained models also makes their solution more versatile and improves cross-architecture generalization results. 
+
+Additionally, they introduce a \texttt{complementary loss} as a regularization technique to align the last-layer feature distributions between the real and synthetic datasets. Fig. \ref{fig:datadam_method} illustrates the novel methodology proposed by the authors.
+
+% Privacy 
+
+% neural Network search
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.48\textwidth]{datadam.png}
+	\caption{DataDAM Method \cite{sajedi2023datadamefficientdatasetdistillation}}
+	\label{fig:datadam_method}
+\end{figure}
+
+With this new method, authors are able to beat existing state-of-the-art solutions by improving performance by 6.5\% for CIFAR100 and 4.1\% for ImageNet-1k. They also achieve up to a 100x reduction in training costs for learning synthetic dataset.
+ 
 \subsection{MNIST Dataset}
 \begin{figure}[H]
 	\centering
@@ -104,6 +127,9 @@ The MNIST dataset contains 28x28-pixel grayscale images of handwritten digits (0
 	\label{fig:mnist_alex_acc}
 \end{figure}
 \subsection{MHIST Dataset}
+The MHIST dataset, short for "Minimalist Histopathology Image Screening Test," is a specialized dataset commonly used for training and evaluating machine learning models in the field of digital pathology. It was developed to address specific challenges in histopathological image analysis, focusing particularly on the differentiation between types of colorectal polyp tissues.
+
+The MHIST dataset contains 224x224-pixel RGB images of hematoxylin and eosin (H\&E) stained histopathology slides, with labels distinguishing between two classes: hyperplastic (non-cancerous) and adenomatous (pre-cancerous) polyps. It consists of 3,152 image patches divided into 2,456 training images and 696 testing images, making it a valuable resource for binary classification tasks in medical image analysis \cite{wei2021petri}.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.48\textwidth]{MHIST_dataset.png}
