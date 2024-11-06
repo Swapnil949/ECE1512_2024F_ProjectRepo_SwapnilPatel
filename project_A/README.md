@@ -1,17 +1,29 @@
-# Supplementary File Contents
+# Dataset Distillation: A Data-Efficient Learning Framework
 
-This repository contains the following files and directories:
+## Overview
 
-1. **networks.ipynb**: This is a Python notebook that provides six different networks, including MLP, Convent, LeNet, AlexNet, VGG11, and ResNet-18. This file is used for learning synthetic dates on the MNIST and CIFAR10 datasets.
+This project explores dataset distillation techniques by comparing two methods, DataDAM and PAD, for creating compact synthetic datasets. Dataset distillation compresses data into smaller, information-rich sets that allow for faster training with less computational load.
 
-2. **mhist_dataset**: This directory contains two subdirectories, which include the images and their annotations for the MHIST dataset. All 3152 images are in the images.zip file. Annotations are included in annotations.csv. This file includes each image file name, its corresponding majority-vote label, and degree of annotator agreement expressed as the number of annotators who marked the image as SSA (e.g., 6 indicates 6/7 agreement with a ground truth of SSA, and 2 would indicate 5/7 agreement with a ground truth of HP).
+Using MNIST as a benchmark, this study examines DataDAM’s Attention Matching and PAD’s alignment-based approach, with PAD customized for MNIST through a data selection strategy inspired by DeepCore. DataDAM is also applied to the larger MHIST dataset to test its adaptability to more complex data.
 
-3. **utils.ipynb**: This is a Python notebook that provides utilities such as access to datasets, preprocessing, and data augmentation. This file is used for learning synthetic dates on the MNIST and CIFAR10 datasets.
-
-4. **Project_B_FAQs.pdf**: This is a list of frequently asked questions that aim to answer (almost) all of your questions and concerns that you may have during Project A.
+## Project Structure
+```
+ECE1512_2024F_ProjectRepo_SwapnilPatel/project_A/
+├── report/                             # Report directory
+|   ├── figures/                        # contains all the figures used in the report
+├── src/
+│   ├── task1.ipynb                     # Jupyter notebook for Task 1 implementation
+│   ├── task1_application.ipynb         # Jupyter notebook for Task 1 application (NAS)
+│   ├── task2/
+│   │   ├── PAD/                        # Adapted PAD method for MNIST dataset
+│   ├── task2.ipynb                     # Jupyter notebook to visualize data and results for Task 2
+|   ├── network.py                      # Contains all networks used in this project
+|   ├── utils.py                        # Contains various utilities function used in this project.
+└── README.md                           # Project README file
+```
 
 ### Hardware Information
-
+All experiements and results prented in this repository were conducted on following hardware: 
 ```
 CPU : AMD EPYC 7B13
 PyTorch Version: 2.2.1
