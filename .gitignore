@@ -1,3 +1,11 @@
 /.venv/
 project_A/src/task2/PAD/dataset/
 project_A/src/task2/PAD/distill/wandb/
+project_B/report/ECE1512_Project_B_report-blx.bib
+project_B/report/ECE1512_Project_B_report.aux
+project_B/report/ECE1512_Project_B_report.bbl
+project_B/report/ECE1512_Project_B_report.blg
+project_B/report/ECE1512_Project_B_report.log
+project_B/report/ECE1512_Project_B_report.out
+project_B/report/ECE1512_Project_B_report.run.xml
+project_B/report/ECE1512_Project_B_report.synctex.gz
