@@ -1,6 +1,8 @@
 \documentclass[12pt, conference, compsoc, onecolumn]{IEEEtran}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb} % For \mathbb and other symbols
 \usepackage{array, float}
 \usepackage[colorlinks=true]{hyperref}
 \usepackage[style=numeric,backend=bibtex]{biblatex}
@@ -174,13 +176,60 @@
 	
 	Despite the slightly larger size of the MambaVision base model compared to the ViT base model, it achieves higher throughput while maintaining comparable test accuracies, highlighting the advantages of the Mamba Architecture.
 	
+	\newpage
+	
 	\subsection{Parameter-Efficient Fine Tuning for Mamba - LoRa}
+	LoRA (Low-Rank Adaptation) is a technique for parameter-efficient fine-tuning (PEFT) of pre-trained models, originally designed for Transformers \cite{hu2021llora}. Instead of updating all parameters during fine-tuning, LoRA inserts low-rank matrices into the model, which are specifically trained for the target task while keeping the original model parameters frozen. This reduces the number of trainable parameters, making the fine-tuning process efficient in terms of both memory and computation. Related work such as MambaPEFT: Exploring Parameter-Efficient Fine-Tuning for Mamba \cite{yoshimura2024mambapeft} and Mamba State-Space Models Can Be Strong Downstream Learners \cite{halloran2024mamba} have demonstrated how parameter-efficient fine-tuning methods can be adapted for Mamba’s state-space models, offering insights into effective strategies for leveraging these architectures in downstream tasks.
+	
+	LoRA modifies the linear layers of the model by introducing additional low-rank decomposition matrices. For a weight matrix WW in a linear layer, LoRA reparameterizes it as:
+	
+	\begin{equation}
+		\centering
+		W' = W + BA
+		\label{eq:lora}
+	\end{equation}
+	
+	Here:
+	\begin{itemize}
+		\item $A$ and $B$ are learnable low-rank matrices (e.g., $A \in \mathbb{R}^{d \times r}$, $B \in \mathbb{R}^{r \times d}$, where $r$ is much smaller than $d$.
+		\item \( W \) remains frozen during fine-tuning, ensuring efficient adaptation with minimal task-specific parameters.
+	\end{itemize}
+	
+	Following modifications to different layers of Mamba can be made to implement LoRA:
+	
+	\subsubsection*{State Transition Layers}
+	\hfill
+	\begin{itemize}
+		\item Mamba’s state transition layers manage the flow of information between time steps, applying linear transformations to evolve the hidden states. LoRA can be used here to modify the transition matrix without needing to retrain the entire model. This allows the model to adapt its dynamics to specific tasks such as time-series prediction or sequence-to-sequence translation
+		\item \textit{Example} The transition matrix $W$ can reparameterized as per Equation \ref{eq:lora}.
+	\end{itemize}
+	
+	\subsubsection*{Projection Layers}
+	\hfill
+	\begin{itemize}
+		\item Projection layers in Mamba connect the internal state space to the output layer, effectively mapping the model's state to predictions.These layers can benefit from LoRA by adapting their transformation parameters. For example, LORA can be applied to projectors to adjust feature representations for visual tasks (like MambaVision) or to improve preiction quality in text-based applications.
+		
+		\item \textit{Example} LoRA can introduce task-specific adaptivity by reparameterizing the projection matrices used for feature extraction and classification, such as adjusting convolutional or linear layers to enhance performance in object detection or segmentation.
+	\end{itemize}
+	
+	\subsubsection*{Embedding Layers}
+	\hfill
+	\begin{itemize}
+		\item If Mamba uses embedding layers (e.g., for sequence input), LoRA can be applied to these as well, allowing for domain-specific fine-tuning. This is particularly useful for text tasks where vocabulary sizes vary or where specific embeddings need to be fine-tuned for the target domain (e.g., medical, financial, or technical language).
+		
+		\item \textit{Example} LoRA can modify embedding matrices to allow for vocabulary adaptation, for instance, mapping the state space representations to embeddings that better capture the semantics of domain-specific data.
+	\end{itemize}
+	
+	Figure \ref{fig:lora_mamba} shows how Mamba can be modified for LoRA based on the proposed changes, incorporating low-rank matrices into key components to enhance task-specific fine-tuning efficiency, 
+	
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.73\textwidth]{figures/lora_mamba.png}
 		\caption{Proposed Parameter-Efficient Fine Tuning for Mamba using LoRA}
 		\label{fig:lora_mamba}
 	\end{figure}
+	
+	
 	
 	\newpage
 	\section{Vision Language Models (VLMs) - LLaVA: Large Language and Vision Assistant}
