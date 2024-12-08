@@ -228,44 +228,11 @@
 		\caption{Proposed Parameter-Efficient Fine Tuning for Mamba using LoRA}
 		\label{fig:lora_mamba}
 	\end{figure}
-	
-	
-	
+		
 	\newpage
-	\section{Vision Language Models (VLMs) - LLaVA: Large Language and Vision Assistant}
-	
-	In this section, LLaVA (Large Language and Vision Assistant), as presented in the paper "Visual Instruction Tuning" \cite{liu2023llava}, is discussed. LLaVA is an end-to-end trained multimodal AI system that connects a vision encoder with a large language model (LLM) to interpret and follow human instructions involving both visual and linguistic contexts. The work in this paper represents the first attempt to use language-only GPT-4 to generate multimodal language-image instruction-following data, enabling instruction tuning for multimodal tasks.
-	
-	The paper demonstrates that LLaVA achieves remarkable capabilities in multimodal chat, often exhibiting behaviors similar to multimodal GPT-4 on unseen images and instructions. Evaluations show an 85.1\% relative score compared to GPT-4 on a synthetic multimodal instruction-following dataset. Furthermore, when fine-tuned on ScienceQA, LLaVA achieves a new state-of-the-art accuracy of 92.53\%, highlighting its effectiveness in reasoning and answering visual and textual queries. To facilitate further research, the authors release the GPT-4-generated visual instruction tuning data, their model, and associated codebase to the public.
-	
-	\subsection{LLaVA Architecture}
-	\begin{figure}[H]
-		\centering
-		\includegraphics[width=0.75\textwidth]{figures/conceptual-diagram-of-llava.png}
-		\caption{LLaVA Architecture \cite{liu2023llava}}
-		\label{fig:llava_arch}
-	\end{figure}
-	
-	The LLaVA (Large Language and Vision Assistant) model architecture is designed to integrate visual and linguistic modalities to enable advanced multimodal understanding. Its structure consists of several key components, which work together to process both image and text inputs, generating coherent and context-aware responses.
-	\subsubsection*{Vision Encoder} 
-	At the foundation of the architecture is the Vision Encoder, which processes the input image $X_v$. This encoder (e.g., CLIP) transforms the raw image data into a high-dimensional feature representation $H_v$. These features encapsulate the visual information in a format suitable for downstream processing.
-	
-	\subsubsection*{Projection Layer} 
-	The Projection Layer serves as a critical bridge between the Vision Encoder and the Language Model. It applies a projection matrix $W$ to convert the feature representations $H_v$ into a format $Z_v$ that is compatible with the language model's embedding space. This alignment ensures seamless integration of visual data with textual data for joint processing.
-	
-	\subsubsection*{Language Instruction Input}
-	Alongside the visual input, the model receives a Language Instruction input $X_q$, which represents the textual task or query. This input is processed by the language model to generate its own feature representation $H_q$, encapsulating the semantic meaning of the query.
-	
-	\subsubsection*{Language Model}
-	At the core of the architecture is the Language Model $f_\phi$, which is a pre-trained large language model (e.g., Vicuna). This model takes both the projected visual features $Z_v$ and the linguistic features $H_q$ as input, integrating them to produce a unified understanding of the multimodal context.
-	
-	\subsubsection*{Output Generation}
-	The final output, $X_a$, is a language-based response that incorporates information from both the visual and textual inputs. This response can range from answering specific questions about an image to providing detailed descriptions or engaging in complex reasoning tasks that require a multimodal perspective.
-	
-	
+		
 	\section*{References}
 	\addcontentsline{toc}{section}{\protect\numberline{}References}
-	\nocite{*}
 	\printbibliography[heading=none]
 	
 	%	\onecolumn
